@@ -30,7 +30,21 @@ public:
 
     ~GPUDirtyMemoryManager() = default;
 
+    [[nodiscard]] bool HasPending() const {
+        return current.load(std::memory_order_acquire).mask != 0;
+    }
+
     void Collect(PAddr address, size_t size) {
+        // Each transform has 32 bits of 64-byte granules. Split writes before building its mask.
+        while (size > page_size - (address & page_mask)) {
+            const size_t part = page_size - (address & page_mask);
+            Collect(address, part);
+            address += part;
+            size -= part;
+        }
+        if (size == 0) {
+            return;
+        }
         TransformAddress t = BuildTransform(address, size);
         TransformAddress tmp, original;
         do {
@@ -50,7 +64,7 @@ public:
                 return;
             }
             tmp.mask |= t.mask;
-        } while (!current.compare_exchange_weak(original, tmp, std::memory_order_release,
+        } while (!current.compare_exchange_weak(original, tmp, std::memory_order_acq_rel,
                                                 std::memory_order_relaxed));
     }
 
@@ -70,6 +84,45 @@ public:
         }
     }
 
+    /// Moves on with each Gather that took writes. A page the core reported to the GPU before
+    /// must be reported again on its next write: the write held back for it has been applied.
+    /// Read after Collect, it tells whether the write went into the list after that Gather.
+    [[nodiscard]] u64 Generation() const {
+        return generation.load(std::memory_order_acquire);
+    }
+
+    /// The page a core last reported to the GPU, and in which generation.
+    struct ReportedPage {
+        PAddr page{~PAddr{}};
+        u64 generation{};
+    };
+
+    /// Collects a CPU write to GPU-cached memory at `page`. `report` (the GPU's OnCPUWrite, which
+    /// holds the page back) runs for the first write to a page in each generation; when it returns
+    /// false the write is not collected.
+    template <typename Report>
+    bool CollectWrite(PAddr address, size_t size, PAddr page, ReportedPage& last, Report&& report) {
+        const u64 seen = Generation();
+        if (last.page != page || last.generation != seen) {
+            if (!report()) {
+                return false;
+            }
+            last = {page, seen};
+        }
+        Collect(address, size);
+        // A Gather took the list since the generation was read: the write may have gone with it
+        // (applied before the caller stores it) or into the next list (while the round releases
+        // the page). Report and collect it again for the next round.
+        // shortcut: a Gather after this check, before the caller stores the bytes, goes unseen;
+        // closing that needs collecting after the store in every write path.
+        if (const u64 now = Generation(); now != seen) {
+            report();
+            Collect(address, size);
+            last.generation = now;
+        }
+        return true;
+    }
+
     void Gather(std::function<void(PAddr, size_t)>& callback) {
         // Nothing collected: back_buffer only grows (under guard) while current holds a valid
         // address, and only Gather resets current, so an invalid current means both are empty.
@@ -83,7 +136,11 @@ public:
         std::scoped_lock gather_lk(gather_guard);
         {
             std::scoped_lock lk(guard);
-            TransformAddress t = current.exchange(default_transform, std::memory_order_relaxed);
+            if (back_buffer.empty() && current.load(std::memory_order_acquire).mask == 0) {
+                return;
+            }
+            generation.fetch_add(1, std::memory_order_acq_rel);
+            TransformAddress t = current.exchange(default_transform, std::memory_order_acq_rel);
             front_buffer.swap(back_buffer);
             if (IsValid(t.address)) {
                 front_buffer.emplace_back(t);
@@ -127,7 +184,7 @@ private:
     constexpr static TransformAddress default_transform = {.address = ~0U, .mask = 0U};
 
     bool IsValid(PAddr address) {
-        return address < (1ULL << 39);
+        return address != default_transform.address;
     }
 
     template <typename T>
@@ -151,6 +208,7 @@ private:
     }
 
     std::atomic<TransformAddress> current{};
+    std::atomic<u64> generation{};
     std::mutex guard;
     std::mutex gather_guard;
     std::vector<TransformAddress> back_buffer;

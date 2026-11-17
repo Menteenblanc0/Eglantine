@@ -2376,6 +2376,16 @@ void RasterizerVulkan::OnCacheInvalidations(std::span<const std::pair<DAddr, u64
     }
 }
 
+void RasterizerVulkan::BeginCachedWrites() {
+    std::scoped_lock lock{buffer_cache.mutex};
+    buffer_cache.BeginCachedWrites();
+}
+
+void RasterizerVulkan::EndCachedWrites() {
+    std::scoped_lock lock{buffer_cache.mutex};
+    buffer_cache.EndCachedWrites();
+}
+
 bool RasterizerVulkan::TryCacheInvalidation(DAddr addr, u64 size) {
     if (addr == 0 || size == 0) return true;
     {

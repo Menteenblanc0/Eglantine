@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "common/assert.h"
+#include "common/scope_exit.h"
 #include "common/settings.h"
 #include "common/settings_enums.h"
 #include "core/core.h"
@@ -110,6 +111,17 @@ struct GPU::Impl {
 
     /// Synchronizes CPU writes with Host GPU memory.
     void InvalidateGPUCache() {
+        const auto managers = system.GetGPUDirtyMemoryManager();
+        if (!cache_cleanup_pending.load(std::memory_order_acquire) &&
+            std::none_of(managers.begin(), managers.end(), [](const auto& manager) {
+                return manager.HasPending();
+            })) {
+            return;
+        }
+        std::scoped_lock lock{cache_invalidation_mutex};
+        auto* const rasterizer = renderer->ReadRasterizer();
+        rasterizer->BeginCachedWrites();
+        SCOPE_EXIT { rasterizer->EndCachedWrites(); };
         // Runs at every fence (~17k/s), on more than one thread: keep each thread's buffer.
         thread_local std::vector<std::pair<DAddr, u64>> thread_writes;
         auto& writes = thread_writes;
@@ -120,6 +132,9 @@ struct GPU::Impl {
         if (!writes.empty()) {
             renderer->ReadRasterizer()->OnCacheInvalidations(writes);
         }
+        // A page held again during this round needs one following round to release it, even
+        // when that write was gathered here and there is no new dirty list at the next fence.
+        cache_cleanup_pending.store(!writes.empty(), std::memory_order_release);
     }
 
     void ForEachPendingCpuWrite(const std::function<void(DAddr, size_t)>& callback) {
@@ -413,6 +428,8 @@ struct GPU::Impl {
 
     std::array<std::list<u32>, Service::Nvidia::MaxSyncPoints> syncpt_interrupts;
 
+    std::atomic<bool> cache_cleanup_pending{};
+    std::mutex cache_invalidation_mutex;
     std::mutex sync_mutex;
     std::mutex device_mutex;
 

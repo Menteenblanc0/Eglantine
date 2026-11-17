@@ -156,6 +156,10 @@ public:
         }
     }
 
+    /// Brackets a serialized batch of collected CPU writes.
+    virtual void BeginCachedWrites() {}
+    virtual void EndCachedWrites() {}
+
     virtual bool TryCacheInvalidation(DAddr addr, u64 size) {
         if (MustFlushRegion(addr, size, VideoCommon::CacheType::BufferCache)) return false;
         OnCacheInvalidation(addr, size);

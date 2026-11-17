@@ -24,6 +24,30 @@
 #include "video_core/texture_cache/image_info.h"
 #include "video_core/texture_cache/util.h"
 
+TEST_CASE("An empty guest image produces zeroed mip layers", "[nx2_memory][texture_row_upload]") {
+    using namespace VideoCommon;
+    ScopedSystemTestContext context;
+    Core::System system;
+    system.Initialize();
+    Tegra::MaxwellDeviceMemoryManager device_memory{system.DeviceMemory()};
+    Tegra::GPU gpu{system, false, false};
+    Null::RasterizerNull rasterizer{gpu};
+    device_memory.BindInterface(&rasterizer);
+    Tegra::MemoryManager memory{system, device_memory, 32};
+    memory.BindRasterizer(&rasterizer);
+
+    ImageInfo info;
+    info.type = ImageType::e2D;
+    info.format = VideoCore::Surface::PixelFormat::R8_UNORM;
+    info.size = {64, 64, 1};
+    info.resources = {2, 2};
+    info.layer_stride = CalculateLayerStride(info);
+    std::vector<u8> output(CalculateUnswizzledSizeBytes(info), 0xee);
+    const auto copies = UnswizzleImage(memory, 0, info, std::span<const u8>{}, output);
+    REQUIRE(copies.size() == 2);
+    CHECK(std::ranges::all_of(output, [](u8 value) { return value == 0; }));
+}
+
 namespace {
 constexpr u64 KiB = 1024;
 constexpr u64 MiB = 1024 * KiB;

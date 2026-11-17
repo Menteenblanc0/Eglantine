@@ -20,6 +20,7 @@
 #include <vector>
 #include <fmt/ranges.h>
 
+#include "common/host_memory.h"
 #include "common/range_sets.inc"
 #include "video_core/buffer_cache/buffer_cache_base.h"
 #include "video_core/buffer_cache/storage_buffer_size.h"
@@ -154,10 +155,23 @@ void BufferCache<P>::TickFrame() {
         nx2_list_copy_stats = {};
     }
     if (frame_tick % 600 == 0 && !uploaded_buffer_ranges.empty()) {
-        for (const auto& [address, size] : uploaded_buffer_ranges) {
-            device_memory.HintCold(address, size);
+        // As in TextureCache::TickFrame: a range uploaded more than once in the window is being
+        // rewritten, not cold.
+        auto& ranges = uploaded_buffer_ranges;
+        if (Common::ColdHintModeInEffect() != Settings::ColdHintMode::Off) {
+            std::sort(ranges.begin(), ranges.end());
+            for (size_t i = 0; i < ranges.size();) {
+                size_t next = i + 1;
+                while (next < ranges.size() && ranges[next] == ranges[i]) {
+                    ++next;
+                }
+                if (next - i == 1) {
+                    device_memory.HintCold(ranges[i].first, ranges[i].second);
+                }
+                i = next;
+            }
         }
-        uploaded_buffer_ranges.clear();
+        ranges.clear();
     }
     if (static u64 frames{}; ++frames % 600 == 0) {
         u64 total{};
@@ -300,12 +314,34 @@ void BufferCache<P>::CachedWriteMemory(DAddr device_addr, u64 size) {
 }
 
 template <class P>
+void BufferCache<P>::BeginCachedWrites() {
+    cpu_recent_held_ranges.Clear();
+}
+
+template <class P>
+void BufferCache<P>::EndCachedWrites() {
+    // Writes held back before the round were gathered by it and are applied now. The page of
+    // one gathered while a core collected the next write to it is held again, after the round
+    // began (Core::GPUDirtyMemoryManager::Generation), and stays held until the next one.
+    cpu_held_ranges = std::move(cpu_recent_held_ranges);
+}
+
+template <class P>
 bool BufferCache<P>::OnCPUWrite(DAddr device_addr, u64 size) {
     const bool is_dirty = IsRegionRegistered(device_addr, size);
     if (!is_dirty) {
         return false;
     }
     if (memory_tracker.IsRegionGpuModified(device_addr, size)) {
+        // Held back until the GPU thread applies it (CachedWriteMemory). Downloads taken before
+        // hold older bytes; the core reports one write per page, so the whole page is held.
+        const DAddr page_start = Common::AlignDown(device_addr, DEVICE_PAGESIZE);
+        const u64 page_size = Common::AlignUp(device_addr + size, DEVICE_PAGESIZE) - page_start;
+        for (auto& ranges : pending_download_ranges) {
+            ranges.Subtract(page_start, page_size);
+        }
+        cpu_held_ranges.Add(page_start, page_size);
+        cpu_recent_held_ranges.Add(page_start, page_size);
         return true;
     }
     WriteMemory(device_addr, size);
@@ -609,6 +645,10 @@ std::pair<typename P::Buffer*, u32> BufferCache<P>::ObtainCPUBuffer(
     default:
         break;
     }
+    // The caller's GPU work (DMA buffer/image copies, indirect dispatches, query writes) uses
+    // these bytes: without this a later upload to them in the same command buffer was reordered
+    // in front of that work, so it read the newer data (textures from a later DMA upload).
+    buffer.MarkUsage(buffer.Offset(device_addr), size);
 
     return {&buffer, buffer.Offset(device_addr)};
 }
@@ -1023,6 +1063,9 @@ void BufferCache<P>::CommitAsyncFlushesHigh() {
         }
     }
     runtime.PostCopyBarrier();
+    cpu_held_ranges.ForEach([&](DAddr start, DAddr end) {
+        download_ranges.Subtract(start, end - start);
+    });
     pending_downloads.emplace_back(std::move(normalized_copies));
     pending_download_ranges.emplace_back(std::move(download_ranges));
     async_buffers.emplace_back(download_staging);
@@ -1253,6 +1296,9 @@ void BufferCache<P>::ClaimCpuWrites(std::span<const std::pair<DAddr, u64>> range
 template <class P>
 Common::RangeSet<DAddr> BufferCache<P>::PendingCpuWriteRanges() {
     Common::RangeSet<DAddr> ranges;
+    cpu_held_ranges.ForEach([&ranges](DAddr start, DAddr end) {
+        ranges.Add(start, end - start);
+    });
     if (pending_cpu_writes) {
         pending_cpu_writes(
             [&ranges](DAddr device_addr, size_t size) { ranges.Add(device_addr, size); });
@@ -1487,14 +1533,14 @@ void BufferCache<P>::BindHostVertexBuffers() {
             Buffer& buffer = slot_buffers[binding.buffer_id];
             TouchBuffer(buffer, binding.buffer_id);
             SynchronizeBuffer(buffer, binding.device_addr, binding.size);
+            const u32 offset = buffer.Offset(binding.device_addr);
+            buffer.MarkUsage(offset, binding.size);
             if (!flags[Dirty::VertexBuffer0 + index]) {
                 flush_bindings();
                 continue;
             }
             flags[Dirty::VertexBuffer0 + index] = false;
             const u32 stride = maxwell3d->regs.vertex_streams[index].stride;
-            const u32 offset = buffer.Offset(binding.device_addr);
-            buffer.MarkUsage(offset, binding.size);
             if (!bindings.buffers.empty() && index != last_index + 1) {
                 flush_bindings();
             }
@@ -1555,6 +1601,8 @@ void BufferCache<P>::BindHostDrawIndirectBuffers() {
         Buffer& buffer = slot_buffers[binding.buffer_id];
         TouchBuffer(buffer, binding.buffer_id);
         SynchronizeBuffer(buffer, binding.device_addr, binding.size);
+        // The draw reads these parameters: keep later uploads to them behind it.
+        buffer.MarkUsage(buffer.Offset(binding.device_addr), binding.size);
     };
     if (current_draw_indirect->include_count) {
         bind_buffer(channel_state->count_buffer_binding);
@@ -1894,6 +1942,11 @@ void BufferCache<P>::ResolveMultiRangeStorage(Binding& binding, bool is_written,
             return;
         }
         if (is_written && !runtime.PrefersSparseSources()) {
+            return;
+        }
+        // A range inside one 4 KiB page has one segment at most. Bananza binds a new written
+        // address in most draws; each such miss walked the page table and added a cache entry.
+        if (binding.size <= DEVICE_PAGESIZE - (binding.gpu_addr & (DEVICE_PAGESIZE - 1))) {
             return;
         }
         const VirtualSegments* found =
@@ -3397,6 +3450,17 @@ void BufferCache<P>::MappedUploadMemory([[maybe_unused]] Buffer& buffer,
         }
         const bool can_reorder = runtime.CanReorderUpload(buffer, copies);
         runtime.CopyBuffer(buffer, upload_staging.buffer, copies, true, can_reorder);
+        MarkUploaded(buffer, copies);
+    }
+}
+
+template <class P>
+void BufferCache<P>::MarkUploaded(Buffer& buffer, std::span<const BufferCopy> copies) {
+    // An upload that stayed in this command buffer (its region was in use, or the stream buffer
+    // was full) did not mark its bytes: a later upload to them was reordered in front of it, and
+    // this older copy overwrote the newer data.
+    for (const BufferCopy& copy : copies) {
+        buffer.MarkUsage(copy.dst_offset, copy.size);
     }
 }
 
@@ -3441,6 +3505,7 @@ void BufferCache<P>::InlineMemoryImplementation(DAddr dest_address, size_t copy_
         std::memcpy(src_pointer, inlined_buffer.data(), copy_size);
         const bool can_reorder = runtime.CanReorderUpload(buffer, copies);
         runtime.CopyBuffer(buffer, upload_staging.buffer, copies, true, can_reorder);
+        MarkUploaded(buffer, copies);
     } else {
         buffer.ImmediateUpload(buffer.Offset(dest_address), inlined_buffer.first(copy_size));
     }

@@ -3779,8 +3779,12 @@ public:
     }
 
     ~INx2GraphicsSystemSession() override {
-        if (m_syncpt_memory != nullptr) {
-            system.Host1x().GetSyncpointManager().SetGuestMirror({});
+        {
+            std::scoped_lock lock{m_syncpt_mutex};
+            if (m_syncpt_memory != nullptr) {
+                system.Host1x().GetSyncpointManager().SetGuestMirror({});
+                m_syncpt_memory = nullptr;
+            }
         }
         if (m_syncpt_poll) {
             system.CoreTiming().UnscheduleEvent(m_syncpt_poll);
@@ -3919,6 +3923,7 @@ private:
     static constexpr u32 HostSyncpoints = 192;        // Tegra::Host1x::SyncpointManager
 
     void AttachSyncptMemory(HLERequestContext& ctx) {
+        std::scoped_lock lock{m_syncpt_mutex};
         // RequestParser doesn't skip TIPC handle words, so read the raw data words.
         const auto* cmd_buf = ctx.CommandBuffer();
         const size_t data = TipcDataOffset(cmd_buf);
@@ -3943,7 +3948,6 @@ private:
             memory.Write32(m_syncpt_ro + 0x14, SyncptRoSummaryOffset);
             memory.Write32(m_syncpt_ro + 0x18, SyncptRwBitsOffset);
             memory.Write32(m_syncpt_ro + 0x1c, SyncptRoBitsOffset);
-            UpdateSyncptValues();
             // Mirror each guest increment as it happens, before the waits it meets are answered:
             // the client's TryWaitNativeSync reads this page, and a client woken by an answered
             // wait (nx2:syncpt 201) before the next poll read the old value. Yoshi and the
@@ -3979,31 +3983,15 @@ private:
         rb.PushCopyObjects(ctx, m_syncpt_events[1]->GetReadableEvent());
     }
 
-    // Mirrors Eden's guest syncpoint values into the shared RO page. Returns true if any changed.
-    bool UpdateSyncptValues() {
-        auto& manager = system.Host1x().GetSyncpointManager();
-        bool changed = false;
-        manager.WithGuestValuesStable([&] {
-            for (u32 id = 0; id < std::min(m_syncpt_count, HostSyncpoints); ++id) {
-                const u64 value = manager.GetGuestSyncpointValue(id);
-                const u64 address = m_syncpt_ro + SyncptValuesOffset + id * 8;
-                if (m_syncpt_memory->Read64(address) != value) {
-                    m_syncpt_memory->Write64(address, value);
-                    changed = true;
-                }
-            }
-        });
-        return changed;
-    }
-
     // Answers every armed wait: the value page is current, so the client rechecks its threshold
     // and rearms if it still has to wait. Acknowledging without a value change costs the client a
     // wakeup per poll, which keeps waits whose syncpoint we never see from hanging.
     void PollSyncpts() {
+        std::scoped_lock lock{m_syncpt_mutex};
         if (m_syncpt_memory == nullptr) {
             return;
         }
-        UpdateSyncptValues();
+        auto& manager = system.Host1x().GetSyncpointManager();
         bool acked = false;
         const u32 words = (m_syncpt_count + 63) / 64;
         for (u32 w = 0; w < words; ++w) {
@@ -4011,6 +3999,11 @@ private:
             const u64 ro_address = m_syncpt_ro + SyncptRoBitsOffset + w * 8;
             if (m_syncpt_memory->Read64(ro_address) != rw_bits) {
                 m_syncpt_memory->Write64(ro_address, rw_bits);
+                acked = true;
+            }
+            // The mirror already updated the page; remember increments independently so a
+            // client rearming the same bit still receives its completion notification.
+            if (w < HostSyncpoints / 64 && (rw_bits & manager.TakeMovedGuest(w)) != 0) {
                 acked = true;
             }
         }
@@ -4446,6 +4439,7 @@ private:
     std::shared_ptr<Nx2NativeObjects> m_objects{std::make_shared<Nx2NativeObjects>()};
     KernelHelpers::ServiceContext m_context;
     std::array<Kernel::KEvent*, 2> m_syncpt_events{};
+    std::mutex m_syncpt_mutex;
     Core::Memory::Memory* m_syncpt_memory{};
     u64 m_syncpt_rw{};
     u64 m_syncpt_ro{};

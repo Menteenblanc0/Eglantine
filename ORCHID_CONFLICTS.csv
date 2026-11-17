@@ -1,0 +1,205 @@
+archivo,tipo,grupo,decision,referencia
+.github/ISSUE_TEMPLATE/bug_report.yml,modify/delete,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+.github/ISSUE_TEMPLATE/feature_request.yml,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+.github/PULL_REQUEST_TEMPLATE.md,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+.github/workflows/release-binaries.yml,modify/delete,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+AGENTS.md,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+CMakeModules/GenerateSCMRev.cmake,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+CONTRIBUTING.md,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+README.md,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+dist/nx2_switches.txt,add/add,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+dist/packaging/arch/orchid-git/PKGBUILD,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+docs/Build.md,modify/delete,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+docs/Caveats.md,modify/delete,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+docs/Debug.md,modify/delete,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+docs/Options.md,modify/delete,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+docs/user/HowToAccessLogs.md,modify/delete,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+docs,file/directory,Documentación,Conservar submódulo docs y notas locales; portar documentación útil sin sustituir la estructura,D1
+src/CMakeLists.txt,content,Compilación,Conservar configuración Eglantine y añadir solo fuentes/dependencias de los módulos seleccionados,D8
+src/audio_core/audio_manager.h,content,Audio,Conservar Eglantine; no asociar cambios de codec con DLC sin prueba de fallo,D9
+src/common/game_presets.h,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/host_memory.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/logging.h,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/net/net.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/common/net/net.h,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/common/nx2_sampler.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/range_map.h,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/range_sets.inc,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/common/scm_rev.cpp.in,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+src/common/scm_rev.h,content,Identidad y distribución,"Conservar Eglantine; no importar publicación, marca ni permisos de Orchid",D1
+src/common/thread.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/CMakeLists.txt,content,Compilación,Conservar configuración Eglantine y añadir solo fuentes/dependencias de los módulos seleccionados,D8
+src/core/arm/dynarmic/arm_dynarmic_64.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/core.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/core_timing.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/device_memory_manager.inc,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/file_sys/nup_container.h,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/nup_writer.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/nup_writer.h,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/patch_manager.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/romfs_factory.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/system_archive/data/font_standard.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/file_sys/system_archive/data/font_standard.h,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/gpu_dirty_memory_manager.h,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/hle/kernel/k_address_arbiter.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/hle/kernel/k_thread.h,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/hle/kernel/svc.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/hle/kernel/svc/svc_thread.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/core/hle/service/am/service/application_functions.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/am/service/application_functions.h,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/am/service/graphics_scale_controller.h,modify/delete,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/am/service/self_controller.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/audio/hardware_opus_decoder_manager.cpp,content,Audio,Conservar Eglantine; no asociar cambios de codec con DLC sin prueba de fallo,D9
+src/core/hle/service/audio/nx2_audio_device_manager.h,content,Audio,Conservar Eglantine; no asociar cambios de codec con DLC sin prueba de fallo,D9
+src/core/hle/service/bcat/news/builtin_news.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/hle/service/friend/friend.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/hle/service/hid/hid_server.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/hid/hid_server.h,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/ns/platform_service_manager.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/nvdrv/devices/nvhost_as_gpu.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/hle/service/nx2_gsv.h,content,Sincronización GPU,"Portar conjuntamente espejo, seguimiento de cambios, esperas y tests; conservar resto de Eglantine",D3
+src/core/hle/service/sockets/bsd.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/hle/service/sockets/sockets.h,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/hle/service/ssl/ssl.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/internal_network/network.cpp,content,Red y servicios auxiliares,Conservar Eglantine; no requerido por montaje local de expansiones,D9
+src/core/launch_params.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/launch_params.h,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/core/loader/deconstructed_rom_directory.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/loader/nso.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/loader/nup.cpp,content,Carga y filesystem,Conservar API Eglantine e integrar BootContent/NACP/DLC; excluir sustitución global y parches FPS por defecto,D2
+src/core/memory.cpp,content,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/dynarmic/src/dynarmic/frontend/A64/translate/impl/simd_scalar_three_different.cpp,add/add,CPU memoria e hilos,Conservar Eglantine; integrar cambios de coherencia solo como cohorte D4 y memoria Windows por separado,D4/D9
+src/frontend_common/update_checker.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/frontend_common/update_checker.h,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/hid_core/frontend/emulated_controller.cpp,content,Núcleo y servicios,Conservar Eglantine; portar metadatos y firmas IPC únicamente con evidencia de contrato y regresiones,D2/D9
+src/qt_common/qt_common.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/shader_recompiler/backend/glsl/emit_glsl_atomic.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/glsl/emit_glsl_instructions.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/nvn_storage_descriptor.h,add/add,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_atomic.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_image.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_instructions.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_memory.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_mesh.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_special.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_tensor.cpp,add/add,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/emit_spirv_warp.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/spirv_emit_context.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/backend/spirv/spirv_emit_context.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/environment.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ampere/lower_to_maxwell.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ampere/program_capture.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ir/breadth_first_search.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ir/ir_emitter.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ir/ir_emitter.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/ir/opcodes.inc,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/control_flow.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/translate/impl/atomic_operations_global_memory.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/translate/impl/integer_shift_right.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/translate/impl/move_register.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/translate/impl/surface_load_store.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/frontend/maxwell/translate/impl/tensor_mul_add.cpp,add/add,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/ir_opt/global_memory_to_storage_buffer_pass.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/ir_opt/passes.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/ir_opt/texture_pass.cpp,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/profile.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/shader_recompiler/shader_info.h,content,Compilador de shaders,Conservar Eglantine; trasladar correcciones aisladas solo con tests Ampere y comparación de imagen,D6
+src/tests/CMakeLists.txt,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/common/event.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/common/game_presets.cpp,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/common/page_table.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/core/gpu_dirty_memory_manager.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/core/nup_writer.cpp,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/core/system_test_context.h,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/ampere_f2i.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/ampere_geometry.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/ampere_lowering.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/descriptor_table.cpp,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/h264_packet.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/memory_tracker.cpp,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/query_copy.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/shader_invalidation.cpp,content,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/spirv_atomic_retry.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/tests/video_core/usage_tracker.cpp,add/add,Pruebas,Adaptar y conservar ambas regresiones sobre las APIs elegidas; evitar duplicar símbolos,D8
+src/video_core/CMakeLists.txt,content,Compilación,Conservar configuración Eglantine y añadir solo fuentes/dependencias de los módulos seleccionados,D8
+src/video_core/buffer_cache/buffer_cache.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/buffer_cache/buffer_cache_base.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/buffer_cache/memory_tracker_base.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/buffer_cache/storage_buffer_size.h,add/add,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/buffer_cache/usage_tracker.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/buffer_cache/word_manager.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/dma_pusher.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/dma_pusher.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/draw_manager.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/kepler_compute.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/maxwell_3d.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/maxwell_3d.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/native_upscale.h,add/add,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/engines/puller.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/fence_manager.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/gpu.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/gpu_split.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/gpu_split.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/gpu_thread.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/gpu_thread.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/host1x/h264_packet.h,add/add,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/host1x/nx2_video_decoder.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/host1x/syncpoint_manager.cpp,content,Sincronización GPU,"Portar conjuntamente espejo, seguimiento de cambios, esperas y tests; conservar resto de Eglantine",D3
+src/video_core/host1x/syncpoint_manager.h,content,Sincronización GPU,"Portar conjuntamente espejo, seguimiento de cambios, esperas y tests; conservar resto de Eglantine",D3
+src/video_core/invalidation_accumulator.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/macro.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/macro_turing_jit.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/memory_manager.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/memory_manager.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/native_qmd.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/nx2.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/nx2_profile.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/query_cache/query_cache.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/query_cache/query_cache_base.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/rasterizer_interface.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_opengl/gl_shader_cache.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/fixed_pipeline_state.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/pipeline_helper.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/present/fsr3_frame_gen.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_buffer_cache.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_compute_pass.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_compute_pipeline.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_compute_pipeline.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_fence_manager.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_graphics_pipeline.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_graphics_pipeline.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_multi_range_buffer.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_pipeline_cache.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_pipeline_cache.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_present_manager.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_query_copy.h,add/add,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_rasterizer.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_rasterizer.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_scheduler.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_scheduler.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_staging_buffer_pool.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_swapchain.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/renderer_vulkan/vk_texture_cache.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/shader_cache.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/shader_environment.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/shader_environment.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/shader_handle_program.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/descriptor_table.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/format_lookup_table.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/image_base.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/memory_budget.h,add/add,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/texture_cache.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/texture_cache_base.h,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/texture_cache/util.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/textures/decoders.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/video_core/vulkan_common/vulkan_memory_allocator.cpp,content,Render y cachés,Conservar Eglantine como base; aceptar solo cohortes de coherencia y optimizaciones acotadas descritas en D4/D5,D4/D5/D6
+src/yuzu/configuration/configure_per_game.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/game/game_list.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/main.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/main.ui,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/main_window.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/main_window.h,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/updater/update_dialog.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu/updater/update_dialog.h,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu_cmd/emu_window/emu_window_sdl3.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7
+src/yuzu_cmd/yuzu.cpp,content,Interfaz y CLI,Conservar interfaz Eglantine y sus APIs NUP; añadir información de contenido y destino real del save,D7

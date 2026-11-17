@@ -1,0 +1,177 @@
+// SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#include <atomic>
+#include <chrono>
+#include <memory>
+#include <semaphore>
+#include <stdexcept>
+#include <thread>
+#include <vector>
+
+#include <catch2/catch_test_macros.hpp>
+
+#include "video_core/host1x/syncpoint_manager.h"
+#include "common/scope_exit.h"
+
+using Tegra::Host1x::SyncpointManager;
+
+TEST_CASE("Syncpoint ids past the table are dropped, valid ones still run their actions",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    constexpr u32 Last = SyncpointManager::NUM_MAX_SYNCPOINTS - 1;
+    bool fired = false;
+    manager->RegisterGuestAction(Last, 1, [&fired] { fired = true; });
+
+    // 24-bit ids as the puller's fence action can carry them.
+    manager->IncrementGuest(SyncpointManager::NUM_MAX_SYNCPOINTS);
+    manager->IncrementHost(0xFFFFFF);
+    REQUIRE_FALSE(fired);
+
+    manager->IncrementGuest(Last);
+    REQUIRE(fired);
+    REQUIRE(manager->GetGuestSyncpointValue(Last) == 1);
+}
+
+TEST_CASE("Syncpoint actions run outside the guard, in value order",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    std::vector<u32> order;
+    bool nested = false;
+    // An action that registers another one takes the guard itself (the composite action can block
+    // on the display while other threads need it); under the guard this deadlocked.
+    manager->RegisterGuestAction(0, 2, [&] {
+        order.push_back(2);
+        manager->RegisterGuestAction(1, 1, [&nested] { nested = true; });
+    });
+    manager->RegisterGuestAction(0, 1, [&order] { order.push_back(1); });
+    manager->RegisterGuestAction(0, 3, [&order] { order.push_back(3); });
+    manager->IncrementGuest(0);
+    manager->IncrementGuest(0);
+    REQUIRE(order == std::vector<u32>{1, 2});
+    manager->IncrementGuest(1);
+    REQUIRE(nested);
+    manager->IncrementGuest(0);
+    REQUIRE(order == std::vector<u32>{1, 2, 3});
+}
+
+TEST_CASE("A syncpoint action can cancel another due action from inside",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    bool second = false;
+    SyncpointManager::ActionHandle handle{};
+    manager->RegisterGuestAction(0, 1, [&] { manager->DeregisterGuestAction(0, handle); });
+    handle = manager->RegisterGuestAction(0, 1, [&second] { second = true; });
+    manager->IncrementGuest(0); // must not wait for itself
+    REQUIRE(second); // already taken out when the first one ran
+}
+
+TEST_CASE("A cancel from another thread returns only after a due action ran",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    std::atomic<bool> release{false};
+    std::atomic<bool> entered{false};
+    std::atomic<bool> second{false};
+    manager->RegisterGuestAction(0, 1, [&] {
+        entered = true;
+        while (!release) {
+            std::this_thread::yield();
+        }
+    });
+    const auto handle = manager->RegisterGuestAction(0, 1, [&second] { second = true; });
+    std::thread incrementer{[&] { manager->IncrementGuest(0); }};
+    while (!entered) {
+        std::this_thread::yield();
+    }
+    // The guard is free while the first action blocks (registering does not wait).
+    manager->RegisterGuestAction(1, 1, [] {});
+    std::thread releaser{[&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        release = true;
+    }};
+    manager->DeregisterGuestAction(0, handle);
+    REQUIRE(second);
+    releaser.join();
+    incrementer.join();
+}
+
+TEST_CASE("Cancelling an action that already ran leaves later actions registered",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    const auto ran = manager->RegisterGuestAction(0, 1, [] {});
+    manager->IncrementGuest(0);
+    bool later = false;
+    manager->RegisterGuestAction(0, 2, [&later] { later = true; });
+    manager->DeregisterGuestAction(0, ran); // its list node may be reused by the later action
+    manager->IncrementGuest(0);
+    REQUIRE(later);
+}
+
+TEST_CASE("The guest mirror gets every value, and moved syncpoints are reported once",
+          "[video_core][syncpoint_manager]") {
+    const auto manager = std::make_unique<SyncpointManager>();
+    manager->IncrementGuest(70);
+    REQUIRE(manager->TakeMovedGuest(1) == u64{1} << 6); // also without a mirror
+    REQUIRE(manager->TakeMovedGuest(1) == 0);
+
+    std::vector<u32> page(SyncpointManager::NUM_MAX_SYNCPOINTS, 0xFFFF);
+    manager->SetGuestMirror([&page](u32 id, u32 value) { page[id] = value; });
+    // Setting the mirror fills the page: nothing else writes it.
+    REQUIRE(page[70] == 1);
+    REQUIRE(page[0] == 0);
+    REQUIRE(page[SyncpointManager::NUM_MAX_SYNCPOINTS - 1] == 0);
+
+    // The page already holds the new value when an action runs and when the bit is taken, so a
+    // poll cannot tell from the page that an armed wait has to be woken.
+    u32 seen_by_action = 0;
+    manager->RegisterGuestAction(70, 2, [&] { seen_by_action = page[70]; });
+    manager->IncrementGuest(70);
+    manager->IncrementGuest(191);
+    manager->IncrementHost(3);
+    REQUIRE(seen_by_action == 2);
+    REQUIRE(page[70] == 2);
+    REQUIRE(manager->TakeMovedGuest(0) == 0); // host increments do not count
+    REQUIRE(manager->TakeMovedGuest(1) == u64{1} << 6);
+    REQUIRE(manager->TakeMovedGuest(2) == u64{1} << 63);
+    REQUIRE(manager->TakeMovedGuest(2) == 0);
+
+    manager->SetGuestMirror({});
+    manager->IncrementGuest(70);
+    REQUIRE(page[70] == 2);
+}
+
+TEST_CASE("A syncpoint is not ready before its mirror has the new value",
+          "[video_core][syncpoint_manager]") {
+    SyncpointManager manager;
+    std::binary_semaphore entered{0};
+    std::binary_semaphore release{0};
+    manager.SetGuestMirror([&](u32 id, u32 value) {
+        if (id == 0 && value == 1) {
+            entered.release();
+            release.acquire();
+        }
+    });
+    std::jthread incrementer{[&] { manager.IncrementGuest(0); }};
+    // Always release the callback, including when a check fails.
+    SCOPE_EXIT { release.release(); };
+    REQUIRE(entered.try_acquire_for(std::chrono::seconds{2}));
+    CHECK_FALSE(manager.IsReadyGuest(0, 1));
+    CHECK(manager.GetGuestSyncpointValue(0) == 0);
+    release.release();
+    incrementer.join();
+    CHECK(manager.IsReadyGuest(0, 1));
+}
+
+TEST_CASE("A throwing syncpoint callback releases the cancellation guard",
+          "[video_core][syncpoint_manager]") {
+    SyncpointManager manager;
+    const auto handle = manager.RegisterGuestAction(0, 1, [] {
+        throw std::runtime_error{"callback failed"};
+    });
+    REQUIRE_THROWS_AS(manager.IncrementGuest(0), std::runtime_error);
+    manager.DeregisterGuestAction(0, handle);
+    bool ran = false;
+    manager.RegisterGuestAction(1, 1, [&] { ran = true; });
+    manager.IncrementGuest(1);
+    CHECK(ran);
+}

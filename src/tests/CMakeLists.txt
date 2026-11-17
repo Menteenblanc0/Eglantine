@@ -59,10 +59,13 @@ add_executable(tests
     core/nx2_debug_server.cpp
     core/nx2_movie_pacing.cpp
     core/nx2_gpu_memory_registry.cpp
+    core/loose_directory.cpp
     core/priority_queue.cpp
     core/internal_network/network.cpp
     video_core/frame_dump_schedule.cpp
     video_core/framebuffer_limits.cpp
+    video_core/syncpoint_manager.cpp
+    video_core/buffer_cache_download.cpp
     video_core/memory_tracker.cpp
     video_core/nx2_perf.cpp
     video_core/nx2_perf_draw_binds.cpp
